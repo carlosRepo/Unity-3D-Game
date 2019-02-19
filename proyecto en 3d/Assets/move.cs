@@ -12,11 +12,16 @@ public class move : MonoBehaviour
     public int saltos;
     public Rigidbody rb;
     public GameObject camera;
+    public Collider coll;  
+    void Awake()
+    {
+        coll = GetComponent<Collider>();
+    }
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent <Rigidbody>();
-        saltos=20;
+        saltos=4;
     }
 
     // Update is called once per frame
@@ -38,14 +43,23 @@ public class move : MonoBehaviour
         //mover camara donde el mouse
         GameObject.FindGameObjectsWithTag("MainCamera")[0].transform.rotation=Quaternion.Euler(rotX,rotY,0);
         //saltar 
-        if (Input.GetButtonDown("Jump")&&saltos>0)
-        {
-            rb.velocity = new Vector3(0,5,0);
-            saltos-=1;
+        if (Input.GetButtonDown("Jump"))
+        {   if (Grounded())
+            {   saltos=1;
+                rb.velocity = new Vector3(0,5,0);
+                saltos-=1;
+            }else if(saltos>0){
+                rb.velocity = new Vector3(0,5,0);
+                saltos-=1;
+            }
         }
     }
 
     void FixedUpdate(){
 
+    }
+    bool Grounded(){
+        //pregunta si hay algo debajo del personaje
+        return Physics.Raycast(transform.position, Vector3.down, coll.bounds.extents.y + 0.1f);
     }
 }
